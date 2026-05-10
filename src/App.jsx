@@ -66,7 +66,11 @@ function exportJSON(plans) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-const isValidPlan = p => p && typeof p.id === 'string' && Array.isArray(p.shortGoals)
+const isValidPlan = p =>
+  p &&
+  typeof p.id === 'string' && p.id.length > 0 &&
+  Array.isArray(p.shortGoals) &&
+  p.shortGoals.every(g => g && typeof g.id === 'string')
 
 function importJSON(e, onImport, currentCount) {
   const file = e.target.files[0]
@@ -80,6 +84,7 @@ function importJSON(e, onImport, currentCount) {
       if (currentCount > 0 && !confirm(`⚠️ 現在の${currentCount}件のデータはすべて上書きされます。\n復元ファイルの${data.length}件に置き換えますか？\n\nこの操作は取り消せません。`)) return
       onImport(data)
       alert(`✅ ${data.length}件のデータを復元しました`)
+      e.target.value = ''
     } catch { alert('読み込みに失敗しました') }
   }
   reader.readAsText(file)
@@ -111,7 +116,7 @@ export default function App() {
   }
 
   const updatePlan = updated => { const next = plans.map(p => p.id === updated.id ? updated : p); savePlans(next); setCurrent(updated) }
-  const deletePlan = id => { if (!confirm('この計画を削除しますか？')) return; savePlans(plans.filter(p => p.id !== id)); setView('home') }
+  const deletePlan = id => { if (!confirm('この計画を削除しますか？')) return; savePlans(plans.filter(p => p.id !== id)); setCurrent(null); setView('home') }
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -211,7 +216,7 @@ function EditView({ plan, onChange }) {
           <Field label="障害種別" value={plan.disability} onChange={v => set('disability', v)} type="select" options={DISABILITY_TYPES} />
           <Field label="期間" value={plan.term} onChange={v => set('term', v)} type="select" options={TERMS} />
           <Field label="担任名（任意）" value={plan.teacher} onChange={v => set('teacher', v)} placeholder="例：田中" />
-          <Field label="年度" value={plan.schoolYear} onChange={v => set('schoolYear', Number(v))} type="number" />
+          <Field label="年度" value={plan.schoolYear} onChange={v => set('schoolYear', v === '' ? '' : Number(v))} type="number" />
         </div>
       </Section>
 
