@@ -63,8 +63,10 @@ function exportJSON(plans) {
   a.href = url
   a.download = `iep_backup_${new Date().toLocaleDateString('ja-JP').replace(/\//g, '')}.json`
   a.click()
-  URL.revokeObjectURL(url)
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
+
+const isValidPlan = p => p && typeof p.id === 'string' && Array.isArray(p.shortGoals)
 
 function importJSON(e, onImport, currentCount) {
   const file = e.target.files[0]
@@ -74,6 +76,7 @@ function importJSON(e, onImport, currentCount) {
     try {
       const data = JSON.parse(ev.target.result)
       if (!Array.isArray(data)) { alert('ファイルの形式が正しくありません'); return }
+      if (!data.every(isValidPlan)) { alert('データの形式が正しくありません（必須フィールドが不足しています）'); return }
       if (currentCount > 0 && !confirm(`⚠️ 現在の${currentCount}件のデータはすべて上書きされます。\n復元ファイルの${data.length}件に置き換えますか？\n\nこの操作は取り消せません。`)) return
       onImport(data)
       alert(`✅ ${data.length}件のデータを復元しました`)
@@ -125,9 +128,9 @@ export default function App() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-5">
-        {view === 'home'    && <HomeView plans={plans} onCreate={createPlan} onSelect={p => { setCurrent(p); setView('edit') }} onDelete={deletePlan} onExport={() => exportJSON(plans)} onImport={data => savePlans(data)} onTerms={() => setView('terms')} freeLimit={FREE_LIMIT} />}
-        {view === 'edit'    && <EditView plan={current} onChange={updatePlan} />}
-        {view === 'preview' && <PrintView plan={current} />}
+        {view === 'home'    && <HomeView plans={plans} onCreate={createPlan} onSelect={p => { setCurrent(p); setView('edit') }} onDelete={deletePlan} onExport={() => exportJSON(plans)} onImport={data => { savePlans(data); setCurrent(null); setView('home') }} onTerms={() => setView('terms')} freeLimit={FREE_LIMIT} />}
+        {view === 'edit'    && current && <EditView plan={current} onChange={updatePlan} />}
+        {view === 'preview' && current && <PrintView plan={current} />}
         {view === 'terms'   && <TermsView />}
         {view === 'upgrade' && <UpgradeView onBack={() => setView('home')} />}
       </main>
@@ -192,7 +195,10 @@ function HomeView({ plans, onCreate, onSelect, onDelete, onExport, onImport, onT
 // ── 編集画面 ────────────────────────────────────────
 function EditView({ plan, onChange }) {
   const set = (key, val) => onChange({ ...plan, [key]: val })
-  const addGoal = () => onChange({ ...plan, shortGoals: [...plan.shortGoals, { id: genId(), jirituArea: '', area: '', goal: '', approach: '', eval: '', evalNote: '' }] })
+  const addGoal = () => {
+    if (plan.shortGoals.length >= 8) { alert('目標は8件まで追加できます'); return }
+    onChange({ ...plan, shortGoals: [...plan.shortGoals, { id: genId(), jirituArea: '', area: '', goal: '', approach: '', eval: '', evalNote: '' }] })
+  }
   const updateGoal = (id, key, val) => onChange({ ...plan, shortGoals: plan.shortGoals.map(g => g.id === id ? { ...g, [key]: val } : g) })
   const removeGoal = id => onChange({ ...plan, shortGoals: plan.shortGoals.filter(g => g.id !== id) })
 
@@ -205,7 +211,7 @@ function EditView({ plan, onChange }) {
           <Field label="障害種別" value={plan.disability} onChange={v => set('disability', v)} type="select" options={DISABILITY_TYPES} />
           <Field label="期間" value={plan.term} onChange={v => set('term', v)} type="select" options={TERMS} />
           <Field label="担任名（任意）" value={plan.teacher} onChange={v => set('teacher', v)} placeholder="例：田中" />
-          <Field label="年度" value={plan.schoolYear} onChange={v => set('schoolYear', v)} type="number" />
+          <Field label="年度" value={plan.schoolYear} onChange={v => set('schoolYear', Number(v))} type="number" />
         </div>
       </Section>
 
