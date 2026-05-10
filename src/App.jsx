@@ -84,8 +84,8 @@ function importJSON(e, onImport, currentCount) {
       if (currentCount > 0 && !confirm(`⚠️ 現在の${currentCount}件のデータはすべて上書きされます。\n復元ファイルの${data.length}件に置き換えますか？\n\nこの操作は取り消せません。`)) return
       onImport(data)
       alert(`✅ ${data.length}件のデータを復元しました`)
-      e.target.value = ''
     } catch { alert('読み込みに失敗しました') }
+    finally { e.target.value = '' }
   }
   reader.readAsText(file)
 }
