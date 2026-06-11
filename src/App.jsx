@@ -7,7 +7,7 @@ const save = (k, v) => {
     localStorage.setItem(k, JSON.stringify(v))
   } catch (e) {
     if (e.name === 'QuotaExceededError') {
-      alert('⚠️ 保存容量が不足しています。不要なデータを削除するか、バックアップ後にデータを整理してください。')
+      alert('⚠️ 保存容量が不足しています。不要なデータを削除するか、保存データを書き出してからデータを整理してください。')
     }
   }
 }
@@ -181,18 +181,31 @@ function HomeView({ plans, onCreate, onSelect, onDelete, onExport, onImport, onT
         </div>
       ))}
 
-      {/* ① バックアップ */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2 no-print">
-        <p className="text-xs font-bold text-slate-600">データのバックアップ・復元</p>
-        <p className="text-xs text-slate-400">端末の機種変更・ブラウザクリア前に必ずバックアップしてください</p>
-        <div className="flex gap-2">
-          <button onClick={onExport} className="flex-1 py-2 rounded-lg border border-indigo-300 text-indigo-600 text-xs font-bold hover:bg-indigo-50">📥 バックアップ（JSON）</button>
-          <label className="flex-1 py-2 rounded-lg border border-slate-300 text-slate-600 text-xs font-bold hover:bg-slate-50 text-center cursor-pointer">
-            📤 復元（JSON）
-            <input type="file" accept=".json" className="hidden" onChange={e => onImport && importJSON(e, onImport, plans.length)} />
-          </label>
+      {/* ① データ管理 */}
+      <details className="bg-white rounded-xl border border-slate-200 p-4 no-print">
+        <summary className="cursor-pointer list-none">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold text-slate-600">データ管理（必要な方のみ）</p>
+              <p className="text-xs text-slate-400 mt-1">端末の機種変更やブラウザ削除に備えるときに使います</p>
+            </div>
+            <span className="text-xs font-bold text-indigo-600 whitespace-nowrap">開く</span>
+          </div>
+        </summary>
+        <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
+          <p className="text-xs text-slate-500 leading-relaxed">
+            この操作は、現在の端末に保存されている計画データをファイルとして保存したり、以前保存したファイルから読み込んだりするためのものです。
+            通常の作成・編集では使わなくても大丈夫です。
+          </p>
+          <div className="flex gap-2">
+            <button onClick={onExport} className="flex-1 py-2 rounded-lg border border-indigo-300 text-indigo-600 text-xs font-bold hover:bg-indigo-50">📥 データを保存</button>
+            <label className="flex-1 py-2 rounded-lg border border-slate-300 text-slate-600 text-xs font-bold hover:bg-slate-50 text-center cursor-pointer">
+              📤 保存データを読み込む
+              <input type="file" accept=".json" className="hidden" onChange={e => onImport && importJSON(e, onImport, plans.length)} />
+            </label>
+          </div>
         </div>
-      </div>
+      </details>
     </div>
   )
 }
@@ -391,7 +404,7 @@ function PrintView({ plan }) {
           <h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">短期目標・手立て・評価</h2>
           {plan.shortGoals.map((g, i) => (
             <table key={g.id} className="w-full border-collapse text-xs mb-3">
-              <thead><tr><th colSpan={2} className="border border-slate-400 bg-indigo-50 px-2 py-1 text-left">目標 {i + 1}{g.jirituArea && `　【自立活動：${JIRITU_AREAS.find(a => a.key === g.jirituArea)?.label}】`}</th></tr></thead>
+              <thead><tr><th colSpan={2} className="border border-slate-400 bg-indigo-50 px-2 py-1 text-left">目標 {i + 1}{g.jirituArea && ` 【自立活動：${JIRITU_AREAS.find(a => a.key === g.jirituArea)?.label}】`}</th></tr></thead>
               <tbody>
                 <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 w-1/4 align-top">短期目標</th><td className="border border-slate-400 px-2 py-2 whitespace-pre-wrap">{g.goal}</td></tr>
                 <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 align-top">手立て</th><td className="border border-slate-400 px-2 py-2 whitespace-pre-wrap">{g.approach}</td></tr>
@@ -450,7 +463,7 @@ function UpgradeView({ onBack }) {
           <li>✅ 学校様式に合わせたカスタマイズ</li>
           <li>✅ 優先サポート</li>
         </ul>
-        <p className="text-xs text-slate-400">個人：¥480/月　学校契約：¥5,000/月〜</p>
+        <p className="text-xs text-slate-400">個人：¥480/月 学校契約：¥5,000/月〜</p>
         <a href="mailto:manabinomorikyouikuken@gmail.com?subject=IEPアプリ プレミアムプランについて"
           className="block w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-center text-sm">
           プレミアムプランを問い合わせる
