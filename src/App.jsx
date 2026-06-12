@@ -360,14 +360,9 @@ function TemplateField({ label, value, onChange, templates, placeholder }) {
 
 // ── 印刷プレビュー ───────────────────────────────────
 function PrintView({ plan }) {
-  const [showLogo, setShowLogo] = useState(false) // ② デフォルトOFF
   return (
     <div>
       <div className="no-print space-y-3 mb-6">
-        <label className="flex items-center gap-2 text-sm cursor-pointer bg-white rounded-xl border border-slate-200 px-4 py-3">
-          <input type="checkbox" checked={showLogo} onChange={e => setShowLogo(e.target.checked)} className="w-4 h-4 accent-indigo-600" />
-          <span>印刷物に「合同会社まなびの森教育研究所」を印刷する</span>
-        </label>
         <button onClick={() => window.print()} className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold">🖨️ 印刷 / PDFで保存</button>
       </div>
 
@@ -434,13 +429,6 @@ function PrintView({ plan }) {
           </table>
         </div>
 
-        {/* ② 社名はデフォルトOFF */}
-        {showLogo && (
-          <div className="flex justify-between text-xs text-slate-400 border-t pt-3 mt-4">
-            <span>合同会社まなびの森教育研究所</span>
-            <span>作成日：{new Date(plan.createdAt).toLocaleDateString('ja-JP')}</span>
-          </div>
-        )}
       </div>
     </div>
   )
