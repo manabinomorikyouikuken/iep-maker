@@ -16,11 +16,11 @@ const save = (k, v) => {
 const FREE_LIMIT = 3
 
 // ── テンプレートデータ ──────────────────────────────
-const DISABILITY_TYPES = ['知的障害', '自閉症・情緒障害', '肢体不自由', '病弱・身体虚弱', '言語障害', '難聴', '視覚障害', 'その他']
+const DISABILITY_TYPES = ['未記入・まだ分からない', '知的障害', '自閉症・情緒障害', '肢体不自由', '病弱・身体虚弱', '言語障害', '難聴', '視覚障害', 'その他']
 const GRADES = ['小1', '小2', '小3', '小4', '小5', '小6', '中1', '中2', '中3', '高1', '高2', '高3']
-const TERMS = ['前期（4月〜9月）', '後期（10月〜3月）', '通年']
+const TERMS = ['前期面談（4月〜9月）', '後期面談（10月〜3月）', '通年の相談']
 
-// ④ 自立活動6区分27項目との対応
+// 自立活動6区分27項目との対応。保護者には任意の参考領域として表示する。
 const JIRITU_AREAS = [
   { key: 'health',      label: '健康の保持',     items: ['生活のリズムや生活習慣の形成', '病気の状態の理解と生活管理', '身体各部の状態の理解と養護', '障害の特性の理解と生活環境の調整', '健康状態の維持・改善'] },
   { key: 'mind',        label: '心理的な安定',   items: ['情緒の安定', '状況の理解と変化への対応', '障害による学習上又は生活上の困難を改善・克服する意欲'] },
@@ -31,37 +31,37 @@ const JIRITU_AREAS = [
 ]
 
 const GOAL_TEMPLATES = {
-  health:      ['生活リズムを整え、毎日決まった時間に登校できる', '薬の服薬管理を自分でできる', '体調の変化を言葉で伝えられる'],
-  mind:        ['気持ちが高ぶったとき、クールダウンの場所に移動できる', '活動の切り替えに見通しを持って対応できる', '自分の気持ちを「うれしい」「かなしい」などの言葉で伝えられる'],
-  human:       ['友達や先生に自分から挨拶することができる', '困ったときに言葉や絵カードで助けを求めることができる', '順番を守って活動に参加することができる'],
-  environment: ['視覚的手がかりを使って活動の流れを理解できる', '特定の感覚刺激への過剰反応を和らげる', '日常的な道具の操作を習得する'],
-  body:        ['着替えを自分でできる（ボタン・ファスナーの操作を含む）', '給食の準備・片付けを自分でできる', 'トイレの一連の手順を自立してできる'],
-  comm:        ['絵カード・AAC機器を使って要求を伝えることができる', '短い文章を声に出して読むことができる', '相手の話を最後まで聞いて返答することができる'],
-  learning:    ['ひらがな・カタカナを正しく読み書きできる', '10までの足し算・引き算ができる', 'お金の計算（100円以内）ができる'],
+  health:      ['生活リズムや体調面で、学校と共有しておきたいことがある', '服薬・体調変化・疲れやすさについて確認したい', '食事・睡眠・登校前後の様子を学校と共有したい'],
+  mind:        ['気持ちが高ぶったときの落ち着き方を、家庭と学校でそろえたい', '予定変更や切り替えがつらい場面について相談したい', '安心できる関わり方や声かけを学校と確認したい'],
+  human:       ['友達や先生との関わりで気になっている場面を共有したい', '困ったときの助けの求め方を、家庭と学校でそろえたい', '集団参加で無理なくできる工夫を相談したい'],
+  environment: ['音・光・におい・人の多さなど、つらくなりやすい環境を共有したい', '見通しを持ちやすくする手がかりを相談したい', '教材や活動場所の工夫について確認したい'],
+  body:        ['着替え・食事・移動など、生活動作で気になることを共有したい', '姿勢や疲れやすさについて学校での様子を聞きたい', '体育・移動・作業で無理が出ていないか確認したい'],
+  comm:        ['気持ちや要求を伝える方法を、家庭と学校で共有したい', '言葉で伝えにくいときのサインを学校に伝えたい', '本人が伝えやすい方法を一緒に考えたい'],
+  learning:    ['読み書き・計算・宿題でつまずきやすい場面を共有したい', '家庭学習でうまくいっている工夫を学校に伝えたい', '学習量や課題の出し方について相談したい'],
 }
 
 const APPROACH_TEMPLATES = [
-  'スケジュール表・視覚的手がかりを提示して見通しを持たせる',
-  '短い指示を出し、理解できているか確認してから次に進む',
-  'できたことをすぐに言語的・物質的に強化する',
-  '課題量を調整し、達成感を積み重ねる',
-  '座席・活動場所に配慮し、刺激の少ない環境を整える',
-  '選択肢を示して自己決定の機会を設ける',
-  'クールダウンスペースを確保し、移動のルールを共有する',
-  '保護者と連絡帳で情報を共有し、家庭と連携する',
-  '好きな活動・強化子を活用して意欲を引き出す',
-  '絵カード・AAC機器を使って表現手段を広げる',
+  '家庭では、予定を先に伝えると落ち着きやすい',
+  '短い言葉で伝えると理解しやすい',
+  '選択肢を示すと、自分で決めやすい',
+  '疲れている日は課題量を少し調整すると取り組みやすい',
+  '静かな場所や一人になれる時間があると切り替えやすい',
+  '好きな活動を先に伝えると見通しを持ちやすい',
+  '困ったときの合図を家庭と学校で共有したい',
+  '連絡帳や面談で、うまくいった支援を共有したい',
+  '本人の得意なことを活動の入口に使いたい',
+  '絵・写真・メモなど、言葉以外の伝え方も使いたい',
 ]
 
-const EVAL_OPTIONS = ['達成できた（◎）', 'おおむね達成（○）', '継続して取り組む（△）', '見直しが必要（×）']
+const EVAL_OPTIONS = ['学校と共有できた', '次回も相談する', '家庭で試す', '学校で様子を見てもらう']
 
-// ① JSONエクスポート
+// 保存データの書き出し
 function exportJSON(plans) {
   const blob = new Blob([JSON.stringify(plans, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `iep_backup_${new Date().toLocaleDateString('ja-JP').replace(/\//g, '')}.json`
+  a.download = `support_memo_${new Date().toLocaleDateString('ja-JP').replace(/\//g, '')}.json`
   a.click()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
@@ -106,7 +106,7 @@ export default function App() {
       name: '', grade: '', disability: '', term: TERMS[0], teacher: '', schoolYear: new Date().getFullYear(),
       strengths: '', challenges: '', care: '', homeInfo: '',
       longGoal: '',
-      // ③ 保護者確認欄を追加
+      // 面談後の確認欄
       parentConfirmed: false, parentName: '', parentDate: '',
       shortGoals: [{ id: genId(), jirituArea: '', area: '', goal: '', approach: '', eval: '', evalNote: '' }],
     }
@@ -116,15 +116,15 @@ export default function App() {
   }
 
   const updatePlan = updated => { const next = plans.map(p => p.id === updated.id ? updated : p); savePlans(next); setCurrent(updated) }
-  const deletePlan = id => { if (!confirm('この計画を削除しますか？')) return; savePlans(plans.filter(p => p.id !== id)); setCurrent(null); setView('home') }
+  const deletePlan = id => { if (!confirm('この支援メモを削除しますか？')) return; savePlans(plans.filter(p => p.id !== id)); setCurrent(null); setView('home') }
 
   return (
     <div className="min-h-screen bg-slate-100">
       <header className="bg-indigo-700 text-white px-4 py-3 flex items-center gap-3 sticky top-0 z-10 shadow no-print">
         {(view !== 'home') && <button onClick={() => setView('home')} className="text-white text-xl">←</button>}
         <h1 className="font-bold text-lg flex-1">
-          {view === 'home'    && '個別の指導計画'}
-          {view === 'edit'    && (current?.name ? `${current.name}の計画` : '新規作成')}
+          {view === 'home'    && '学校と話すための支援メモ'}
+          {view === 'edit'    && (current?.name ? `${current.name}さんの支援メモ` : '新しい支援メモ')}
           {view === 'preview' && '印刷プレビュー'}
           {view === 'terms'   && '利用規約'}
           {view === 'upgrade' && 'プレミアムプラン'}
@@ -148,8 +148,9 @@ function HomeView({ plans, onCreate, onSelect, onDelete, onExport, onImport, onT
   return (
     <div className="space-y-4">
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 leading-relaxed">
-        ⚠️ <strong>個人情報の取り扱い：</strong>データはこの端末内にのみ保存されます。共有PCでの使用は避け、イニシャル等での入力を推奨します。
-        学校・施設の情報管理規定に従ってください。
+        ⚠️ <strong>このメモの位置づけ：</strong>学校が作成・保管する正式な個別の指導計画ではありません。
+        面談前に、家庭で見えている姿や学校と相談したいことを整理するためのメモです。
+        データはこの端末内にのみ保存されます。
         <button onClick={onTerms} className="underline ml-1">利用規約を確認する</button>
       </div>
 
@@ -161,11 +162,11 @@ function HomeView({ plans, onCreate, onSelect, onDelete, onExport, onImport, onT
 
       <button onClick={onCreate}
         className={`w-full py-4 rounded-xl font-bold text-lg shadow-md no-print ${plans.length >= freeLimit ? 'bg-slate-300 text-slate-500' : 'bg-indigo-600 text-white'}`}>
-        ＋ 新しい計画を作成{plans.length >= freeLimit ? '（上限）' : ''}
+        ＋ 新しい支援メモを作成{plans.length >= freeLimit ? '（上限）' : ''}
       </button>
 
       {plans.length === 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-sm">まだ計画が作成されていません</div>
+        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-sm">まだ支援メモが作成されていません</div>
       )}
 
       {plans.map(p => (
@@ -174,7 +175,7 @@ function HomeView({ plans, onCreate, onSelect, onDelete, onExport, onImport, onT
             {p.name ? p.name[0] : '?'}
           </div>
           <button onClick={() => onSelect(p)} className="flex-1 text-left">
-            <div className="font-bold text-slate-800">{p.name || '（名前未入力）'}</div>
+            <div className="font-bold text-slate-800">{p.name || '（お子さんの呼び方未入力）'}</div>
             <div className="text-xs text-slate-400">{p.grade} {p.term} — {new Date(p.createdAt).toLocaleDateString('ja-JP')}</div>
           </button>
           <button onClick={() => onDelete(p.id)} className="text-slate-300 hover:text-red-400 text-xl">×</button>
@@ -194,7 +195,7 @@ function HomeView({ plans, onCreate, onSelect, onDelete, onExport, onImport, onT
         </summary>
         <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
           <p className="text-xs text-slate-500 leading-relaxed">
-            この操作は、現在の端末に保存されている計画データをファイルとして保存したり、以前保存したファイルから読み込んだりするためのものです。
+            この操作は、現在の端末に保存されている支援メモデータをファイルとして保存したり、以前保存したファイルから読み込んだりするためのものです。
             通常の作成・編集では使わなくても大丈夫です。
           </p>
           <div className="flex gap-2">
@@ -214,7 +215,7 @@ function HomeView({ plans, onCreate, onSelect, onDelete, onExport, onImport, onT
 function EditView({ plan, onChange }) {
   const set = (key, val) => onChange({ ...plan, [key]: val })
   const addGoal = () => {
-    if (plan.shortGoals.length >= 8) { alert('目標は8件まで追加できます'); return }
+    if (plan.shortGoals.length >= 8) { alert('相談テーマは8件まで追加できます'); return }
     onChange({ ...plan, shortGoals: [...plan.shortGoals, { id: genId(), jirituArea: '', area: '', goal: '', approach: '', eval: '', evalNote: '' }] })
   }
   const updateGoal = (id, key, val) => onChange({ ...plan, shortGoals: plan.shortGoals.map(g => g.id === id ? { ...g, [key]: val } : g) })
@@ -224,37 +225,37 @@ function EditView({ plan, onChange }) {
     <div className="space-y-6">
       <Section title="📋 基本情報">
         <div className="grid grid-cols-2 gap-3">
-          <Field label="氏名（イニシャル推奨）" value={plan.name} onChange={v => set('name', v)} placeholder="例：A.T" />
+        <Field label="お子さんの呼び方（イニシャル推奨）" value={plan.name} onChange={v => set('name', v)} placeholder="例：A.T" />
           <Field label="学年" value={plan.grade} onChange={v => set('grade', v)} type="select" options={GRADES} />
-          <Field label="障害種別" value={plan.disability} onChange={v => set('disability', v)} type="select" options={DISABILITY_TYPES} />
-          <Field label="期間" value={plan.term} onChange={v => set('term', v)} type="select" options={TERMS} />
-          <Field label="担任名（任意）" value={plan.teacher} onChange={v => set('teacher', v)} placeholder="例：田中" />
+          <Field label="支援ニーズ（任意・分かる範囲）" value={plan.disability} onChange={v => set('disability', v)} type="select" options={DISABILITY_TYPES} />
+          <Field label="面談時期" value={plan.term} onChange={v => set('term', v)} type="select" options={TERMS} />
+          <Field label="学校・担任名（任意）" value={plan.teacher} onChange={v => set('teacher', v)} placeholder="例：〇〇小学校・田中先生" />
           <Field label="年度" value={plan.schoolYear} onChange={v => set('schoolYear', v === '' ? '' : Number(v))} type="number" />
         </div>
       </Section>
 
-      <Section title="🔍 実態把握">
-        <Field label="得意なこと・強み" value={plan.strengths} onChange={v => set('strengths', v)} type="textarea" placeholder="例：絵を描くことが好き" />
-        <Field label="苦手なこと・課題" value={plan.challenges} onChange={v => set('challenges', v)} type="textarea" placeholder="例：集団活動での切り替えが難しい" />
-        <Field label="配慮・支援の現状" value={plan.care} onChange={v => set('care', v)} type="textarea" placeholder="例：視覚的スケジュールを使用" />
-        <Field label="家庭からの情報" value={plan.homeInfo} onChange={v => set('homeInfo', v)} type="textarea" placeholder="例：家では比較的落ち着いている" />
+      <Section title="🏠 家庭で見えている姿">
+        <Field label="得意なこと・好きなこと" value={plan.strengths} onChange={v => set('strengths', v)} type="textarea" placeholder="例：絵を描くこと、電車の話、決まった手順で進めることが好き" />
+        <Field label="家庭で困っている場面" value={plan.challenges} onChange={v => set('challenges', v)} type="textarea" placeholder="例：予定変更があると不安が強くなる。宿題の始め方で止まりやすい。" />
+        <Field label="家庭で試している工夫" value={plan.care} onChange={v => set('care', v)} type="textarea" placeholder="例：先に予定を紙に書く。選択肢を2つにして聞く。" />
+        <Field label="学校に伝えておきたいこと" value={plan.homeInfo} onChange={v => set('homeInfo', v)} type="textarea" placeholder="例：朝の疲れやすさ、家で落ち着きやすい声かけ、本人が嫌がる言葉など" />
       </Section>
 
-      <Section title="🎯 長期目標（年間）">
-        <Field label="長期目標" value={plan.longGoal} onChange={v => set('longGoal', v)} type="textarea" placeholder="例：日常生活の基本的なスキルを身につけ、学校生活に安心して参加できる" />
+      <Section title="🎯 面談で確認したい方向性">
+        <Field label="今年大切にしたいこと・学校と確認したい方向性" value={plan.longGoal} onChange={v => set('longGoal', v)} type="textarea" placeholder="例：安心して登校できることを優先したい。困った時に助けを求める方法を家庭と学校でそろえたい。" />
       </Section>
 
-      <Section title="📌 短期目標・手立て・評価">
+      <Section title="📌 学校と相談したいテーマ">
         {plan.shortGoals.map((g, i) => (
           <div key={g.id} className="bg-slate-50 rounded-xl p-4 space-y-3 border border-slate-200">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-indigo-700">目標 {i + 1}</span>
+              <span className="text-sm font-bold text-indigo-700">相談テーマ {i + 1}</span>
               {plan.shortGoals.length > 1 && <button onClick={() => removeGoal(g.id)} className="text-slate-400 hover:text-red-400 text-sm">削除</button>}
             </div>
 
-            {/* ④ 自立活動6区分 */}
             <div>
-              <label className="text-xs text-slate-600 font-bold mb-1 block">自立活動の区分（文科省6区分）</label>
+              <label className="text-xs text-slate-600 font-bold mb-1 block">関係しそうな領域（任意）</label>
+              <p className="text-[11px] text-slate-400 mb-2">分からなければ選ばなくて大丈夫です。学校との話し合いで使えそうな時だけ選んでください。</p>
               <div className="flex flex-wrap gap-1.5">
                 {JIRITU_AREAS.map(a => (
                   <button key={a.key} onClick={() => updateGoal(g.id, 'jirituArea', g.jirituArea === a.key ? '' : a.key)}
@@ -265,19 +266,18 @@ function EditView({ plan, onChange }) {
               </div>
               {g.jirituArea && (
                 <div className="mt-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-lg px-3 py-2">
-                  <strong>関連項目：</strong>{JIRITU_AREAS.find(a => a.key === g.jirituArea)?.items.join('、')}
+                  <strong>参考：</strong>{JIRITU_AREAS.find(a => a.key === g.jirituArea)?.items.join('、')}
                 </div>
               )}
             </div>
 
-            <TemplateField label="短期目標" value={g.goal} onChange={v => updateGoal(g.id, 'goal', v)}
-              templates={getGoalTemplates(g.jirituArea)} placeholder="具体的・測定可能な目標を入力" />
-            <TemplateField label="手立て・支援方法" value={g.approach} onChange={v => updateGoal(g.id, 'approach', v)}
-              templates={APPROACH_TEMPLATES} placeholder="具体的な支援方法を入力" />
+            <TemplateField label="学校と相談したいこと" value={g.goal} onChange={v => updateGoal(g.id, 'goal', v)}
+              templates={getGoalTemplates(g.jirituArea)} placeholder="例：切り替えが難しい場面で、学校ではどんな様子か確認したい" />
+            <TemplateField label="家庭で試している工夫・学校で試せそうなこと" value={g.approach} onChange={v => updateGoal(g.id, 'approach', v)}
+              templates={APPROACH_TEMPLATES} placeholder="例：予定を先に伝えると落ち着きやすいので、学校でも同じ方法が使えるか相談したい" />
 
-            {/* ③ 評価＋評価根拠 */}
             <div>
-              <label className="text-xs text-slate-600 font-bold mb-1 block">評価（学期末）</label>
+              <label className="text-xs text-slate-600 font-bold mb-1 block">面談後の整理</label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {EVAL_OPTIONS.map(e => (
                   <button key={e} onClick={() => updateGoal(g.id, 'eval', g.eval === e ? '' : e)}
@@ -287,26 +287,25 @@ function EditView({ plan, onChange }) {
                 ))}
               </div>
               <textarea value={g.evalNote} onChange={e => updateGoal(g.id, 'evalNote', e.target.value)}
-                placeholder="評価の根拠・次期への引き継ぎ事項を記述してください"
+                placeholder="面談で確認したこと、次回までに家庭や学校で試すことを記録してください"
                 rows={2} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-400 resize-none" />
             </div>
           </div>
         ))}
         <button onClick={addGoal} className="w-full py-2 rounded-xl border-2 border-dashed border-indigo-300 text-indigo-600 text-sm font-bold hover:bg-indigo-50">
-          ＋ 目標を追加
+          ＋ 相談テーマを追加
         </button>
       </Section>
 
-      {/* ③ 保護者確認欄 */}
-      <Section title="👨‍👩‍👧 保護者確認">
-        <p className="text-xs text-slate-500">保護者が計画の内容を確認・同意した記録です。</p>
+      <Section title="📝 面談後の確認">
+        <p className="text-xs text-slate-500">面談で話した相手や確認日を残しておくための欄です。</p>
         <div className="grid grid-cols-2 gap-3">
-          <Field label="保護者氏名" value={plan.parentName} onChange={v => set('parentName', v)} placeholder="例：田中 〇〇" />
-          <Field label="確認日" value={plan.parentDate} onChange={v => set('parentDate', v)} type="date" />
+          <Field label="面談した相手" value={plan.parentName} onChange={v => set('parentName', v)} placeholder="例：担任の先生、支援コーディネーター" />
+          <Field label="面談日・確認日" value={plan.parentDate} onChange={v => set('parentDate', v)} type="date" />
         </div>
         <label className="flex items-center gap-2 text-sm cursor-pointer">
           <input type="checkbox" checked={plan.parentConfirmed} onChange={e => set('parentConfirmed', e.target.checked)} className="w-4 h-4 accent-indigo-600" />
-          保護者が内容を確認した
+          面談内容を確認した
         </label>
       </Section>
     </div>
@@ -374,22 +373,25 @@ function PrintView({ plan }) {
 
       <div className="bg-white rounded-xl border border-slate-200 p-6 print-page space-y-5 text-sm">
         <div className="text-center">
-          <h1 className="text-xl font-bold border-b-2 border-slate-800 pb-2 mb-1">個別の指導計画</h1>
+          <h1 className="text-xl font-bold border-b-2 border-slate-800 pb-2 mb-1">学校と話すための支援メモ</h1>
           <p className="text-xs text-slate-500">{plan.schoolYear}年度 {plan.term}</p>
+          <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+            このメモは、学校が作成・保管する正式な個別の指導計画に代わるものではありません。面談前に家庭で見えている姿や、学校と相談したい内容を整理するための補助資料です。
+          </p>
         </div>
 
         <table className="w-full border-collapse text-xs">
           <tbody>
-            <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left w-1/4">氏名</th><td className="border border-slate-400 px-2 py-1">{plan.name}</td><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left w-1/4">学年</th><td className="border border-slate-400 px-2 py-1">{plan.grade}</td></tr>
-            <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left">障害種別</th><td className="border border-slate-400 px-2 py-1">{plan.disability}</td><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left">担任</th><td className="border border-slate-400 px-2 py-1">{plan.teacher}</td></tr>
+            <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left w-1/4">お子さん</th><td className="border border-slate-400 px-2 py-1">{plan.name}</td><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left w-1/4">学年</th><td className="border border-slate-400 px-2 py-1">{plan.grade}</td></tr>
+            <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left">支援ニーズ</th><td className="border border-slate-400 px-2 py-1">{plan.disability}</td><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left">学校・担任</th><td className="border border-slate-400 px-2 py-1">{plan.teacher}</td></tr>
           </tbody>
         </table>
 
         <div>
-          <h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">実態把握</h2>
+          <h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">家庭で見えている姿</h2>
           <table className="w-full border-collapse text-xs">
             <tbody>
-              {[['得意なこと・強み', plan.strengths], ['苦手なこと・課題', plan.challenges], ['配慮・支援の現状', plan.care], ['家庭からの情報', plan.homeInfo]].filter(([,v]) => v).map(([label, val]) => (
+              {[['得意なこと・好きなこと', plan.strengths], ['家庭で困っている場面', plan.challenges], ['家庭で試している工夫', plan.care], ['学校に伝えておきたいこと', plan.homeInfo]].filter(([,v]) => v).map(([label, val]) => (
                 <tr key={label}><th className="border border-slate-400 bg-slate-100 px-2 py-1 text-left w-1/4 align-top">{label}</th><td className="border border-slate-400 px-2 py-2 whitespace-pre-wrap">{val}</td></tr>
               ))}
             </tbody>
@@ -397,26 +399,25 @@ function PrintView({ plan }) {
         </div>
 
         {plan.longGoal && (
-          <div><h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">長期目標</h2><div className="border border-slate-400 px-3 py-2 text-xs">{plan.longGoal}</div></div>
+          <div><h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">面談で確認したい方向性</h2><div className="border border-slate-400 px-3 py-2 text-xs">{plan.longGoal}</div></div>
         )}
 
         <div>
-          <h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">短期目標・手立て・評価</h2>
+          <h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">学校と相談したいテーマ</h2>
           {plan.shortGoals.map((g, i) => (
             <table key={g.id} className="w-full border-collapse text-xs mb-3">
-              <thead><tr><th colSpan={2} className="border border-slate-400 bg-indigo-50 px-2 py-1 text-left">目標 {i + 1}{g.jirituArea && ` 【自立活動：${JIRITU_AREAS.find(a => a.key === g.jirituArea)?.label}】`}</th></tr></thead>
+              <thead><tr><th colSpan={2} className="border border-slate-400 bg-indigo-50 px-2 py-1 text-left">相談テーマ {i + 1}{g.jirituArea && ` 【関係しそうな領域：${JIRITU_AREAS.find(a => a.key === g.jirituArea)?.label}】`}</th></tr></thead>
               <tbody>
-                <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 w-1/4 align-top">短期目標</th><td className="border border-slate-400 px-2 py-2 whitespace-pre-wrap">{g.goal}</td></tr>
-                <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 align-top">手立て</th><td className="border border-slate-400 px-2 py-2 whitespace-pre-wrap">{g.approach}</td></tr>
-                <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 align-top">評価</th><td className="border border-slate-400 px-2 py-2">{g.eval}{g.evalNote && <><br /><span className="text-slate-500">{g.evalNote}</span></>}</td></tr>
+                <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 w-1/4 align-top">相談したいこと</th><td className="border border-slate-400 px-2 py-2 whitespace-pre-wrap">{g.goal}</td></tr>
+                <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 align-top">家庭の工夫・学校で試せそうなこと</th><td className="border border-slate-400 px-2 py-2 whitespace-pre-wrap">{g.approach}</td></tr>
+                <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 align-top">面談後の整理</th><td className="border border-slate-400 px-2 py-2">{g.eval}{g.evalNote && <><br /><span className="text-slate-500">{g.evalNote}</span></>}</td></tr>
               </tbody>
             </table>
           ))}
         </div>
 
-        {/* ③ 保護者確認欄 */}
         <div>
-          <h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">保護者確認</h2>
+          <h2 className="font-bold border-l-4 border-indigo-600 pl-2 mb-2">面談後の確認</h2>
           <table className="w-full border-collapse text-xs">
             <tbody>
               <tr>
@@ -427,8 +428,8 @@ function PrintView({ plan }) {
                     : <span className="text-slate-400">未確認</span>}
                 </td>
               </tr>
-              <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 w-1/4">確認者</th><td className="border border-slate-400 px-2 py-1">{plan.parentName || '　　　　　　　　'}</td><th className="border border-slate-400 bg-slate-100 px-2 py-1 w-1/4">確認日</th><td className="border border-slate-400 px-2 py-1">{plan.parentDate || '　　　年　　月　　日'}</td></tr>
-              <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1">署名</th><td colSpan={3} className="border border-slate-400 px-2 py-6"></td></tr>
+              <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1 w-1/4">面談した相手</th><td className="border border-slate-400 px-2 py-1">{plan.parentName || '　　　　　　　　'}</td><th className="border border-slate-400 bg-slate-100 px-2 py-1 w-1/4">面談日・確認日</th><td className="border border-slate-400 px-2 py-1">{plan.parentDate || '　　　年　　月　　日'}</td></tr>
+              <tr><th className="border border-slate-400 bg-slate-100 px-2 py-1">メモ</th><td colSpan={3} className="border border-slate-400 px-2 py-6"></td></tr>
             </tbody>
           </table>
         </div>
@@ -452,19 +453,19 @@ function UpgradeView({ onBack }) {
       <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 text-center space-y-3">
         <div className="text-3xl">🔓</div>
         <h2 className="font-bold text-lg text-orange-800">無料版の上限に達しました</h2>
-        <p className="text-sm text-orange-700">無料版は{FREE_LIMIT}件まで作成できます。</p>
+        <p className="text-sm text-orange-700">無料版は{FREE_LIMIT}件まで支援メモを作成できます。</p>
       </div>
       <div className="bg-white rounded-xl border border-indigo-300 p-6 space-y-3">
         <h3 className="font-bold text-indigo-700">プレミアムプラン（準備中）</h3>
         <ul className="text-sm space-y-2 text-slate-600">
-          <li>✅ 計画数の無制限作成</li>
-          <li>✅ クラス全員の一括管理</li>
-          <li>✅ 複数端末でのデータ同期</li>
-          <li>✅ 学校様式に合わせたカスタマイズ</li>
+          <li>✅ 支援メモ数の無制限作成</li>
+          <li>✅ 複数のお子さん・複数年度の整理</li>
+          <li>✅ 面談前後のメモを残しやすいPDF出力</li>
+          <li>✅ 学校との共有に使いやすい文例追加</li>
           <li>✅ 優先サポート</li>
         </ul>
-        <p className="text-xs text-slate-400">個人：¥480/月 学校契約：¥5,000/月〜</p>
-        <a href="mailto:manabinomorikyouikuken@gmail.com?subject=IEPアプリ プレミアムプランについて"
+        <p className="text-xs text-slate-400">個人向けプラン：準備中</p>
+        <a href="mailto:manabinomorikyouikuken@gmail.com?subject=支援メモアプリ プレミアムプランについて"
           className="block w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-center text-sm">
           プレミアムプランを問い合わせる
         </a>
@@ -479,14 +480,14 @@ function TermsView() {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4 text-sm text-slate-700 leading-relaxed">
       <h2 className="font-bold text-lg text-slate-800">利用規約</h2>
-      <p className="text-xs text-slate-400">最終更新：2026年5月10日</p>
+      <p className="text-xs text-slate-400">最終更新：2026年6月12日</p>
 
       {[
-        ['第1条（目的）', '本アプリは、特別支援教育における個別の指導計画の作成補助を目的とするツールです。合同会社まなびの森教育研究所（以下「当社」）が提供します。'],
+        ['第1条（目的）', '本アプリは、保護者が家庭で見えているお子さんの姿や、学校と相談したい内容を整理し、面談や個別の指導計画に関する話し合いに備えるための補助ツールです。合同会社まなびの森教育研究所（以下「当社」）が提供します。'],
         ['第2条（個人情報の取り扱い）', '本アプリに入力されたデータは、利用者の端末内（ブラウザのlocalStorage）にのみ保存され、外部サーバーへの送信は一切行いません。ただし、localStorageはブラウザの開発者ツールで閲覧可能であり、共有端末での使用には十分ご注意ください。なお、本アプリはサービス改善のためGoogle Analytics 4（GA4）を使用しており、ページ閲覧状況等の統計情報を収集しています。個人を特定できる情報は含まれません。詳細はプライバシーポリシーをご確認ください。'],
-        ['第3条（利用者の責任）', '本アプリの利用にあたっては、勤務先の学校・施設の個人情報管理規定、情報セキュリティポリシー、および個人情報保護法をはじめとする関連法令を遵守してください。法令・規定への適合は利用者の責任において行っていただく必要があります。'],
-        ['第4条（免責事項）', '当社は、本アプリの利用によって生じたいかなる損害についても責任を負いません。本アプリは教育支援の補助ツールであり、記録内容の正確性・完全性・各教育機関の様式との整合性を保証するものではありません。'],
-        ['第5条（禁止事項）', '本アプリを以下の目的で使用することを禁止します：①学校・施設の情報管理規定に反する使用、②取得した個人情報の目的外利用・第三者提供、③本アプリのリバースエンジニアリング・改ざん。'],
+        ['第3条（利用者の責任）', '本アプリの利用にあたっては、個人情報の扱いに十分注意し、共有端末や第三者が閲覧できる環境での入力を避けてください。学校や施設と共有する場合は、相手先の情報管理ルールに従ってください。'],
+        ['第4条（免責事項）', '本アプリで作成したメモは、学校が作成・保管する正式な個別の指導計画、診断、評価、法的判断の代替ではありません。学校との面談や相談の材料としてご利用ください。'],
+        ['第5条（禁止事項）', '本アプリを以下の目的で使用することを禁止します：①本人や保護者の同意なく第三者の個人情報を入力・共有すること、②取得した個人情報の目的外利用・第三者提供、③本アプリのリバースエンジニアリング・改ざん。'],
         ['第6条（規約の変更）', '当社は本規約をいつでも変更できます。変更後もアプリを継続して使用した場合は、変更に同意したものとみなします。'],
       ].map(([title, body]) => (
         <div key={title}>
@@ -500,7 +501,7 @@ function TermsView() {
         <p>〒261-0001 千葉県千葉市美浜区幸町2-16-13-505</p>
         <p>E-mail：manabinomorikyouikuken@gmail.com</p>
         <p className="mt-2">
-          <a href="/privacy.html" className="underline text-indigo-400" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+          <a href="/iep-maker/privacy.html" className="underline text-indigo-400" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
         </p>
       </div>
     </div>

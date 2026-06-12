@@ -1,16 +1,25 @@
-# React + Vite
+# 学校と話すための支援メモ
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+保護者が、年2回程度の面談や個別の指導計画に関する話し合いの前に、家庭で見えている子どもの姿や学校と相談したい内容を整理するためのWebアプリです。
 
-Currently, two official plugins are available:
+このアプリは、学校が作成・保管する正式な個別の指導計画に代わるものではありません。面談前の整理、学校とのすり合わせ、次回までに家庭と学校で試すことのメモとして使うことを想定しています。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 想定ユーザー
 
-## React Compiler
+- 障害のあるお子さん、または学校生活で支援ニーズのあるお子さんを持つ保護者
+- 学校との面談前に、家庭での様子や相談したいことを整理したい保護者
+- 保護者支援の場面で、本アプリの使い方を案内する教員・支援者
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 開発
 
-## Expanding the ESLint configuration
+```bash
+npm install
+npm run dev
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+公開はGitHub Pagesを使用します。公開操作は必ず内容確認後に行います。
+
+```bash
+npm run deploy
+```
